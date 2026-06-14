@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@400;500;600;700;800&family=Spectral:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:#0e1016; -webkit-font-smoothing:antialiased; }
+  ::selection{ background:#e7b656; color:#1a1205; }
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-track{ background:#11151f; }
+  ::-webkit-scrollbar-thumb{ background:#3a3526; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover{ background:#5a5236; }
+  input{ font-family:inherit; }
+  input::placeholder{ color:#6d6655; }
+  @keyframes mpFade{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
+  @keyframes mpGlow{ 0%,100%{ opacity:.85;} 50%{ opacity:1;} }
+  @keyframes mpSpot{ 0%,100%{ opacity:.5;} 50%{ opacity:.9;} }
+</style>
+<script src="data/megaporra-data.js"></script>
+</helmet>
+
+<div style="min-height:100vh; background:#0e1016; color:#ece3d2; font-family:Archivo, system-ui, sans-serif; position:relative; overflow-x:hidden;">
+
+  <div style="position:fixed; top:0; left:0; right:0; height:55vh; pointer-events:none; z-index:0; background:radial-gradient(120% 80% at 50% -18%, rgba(231,182,86,0.16), rgba(231,182,86,0.04) 38%, transparent 62%);"></div>
+  <div style="position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5; background:linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.5));"></div>
+
+  <header style="position:sticky; top:0; z-index:50; background:rgba(15,18,26,0.86); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid rgba(231,182,86,0.18);">
+    <div style="height:9px; background:radial-gradient(circle at center, #f7d684 0 1.7px, rgba(247,214,132,0.18) 2.1px, transparent 2.7px); background-size:21px 100%; filter:drop-shadow(0 0 3px rgba(247,214,132,0.55)); animation:mpGlow 3.2s ease-in-out infinite;"></div>
+
+    <div style="max-width:1120px; margin:0 auto; padding:14px 18px 0;">
+      <div style="display:flex; align-items:center; gap:14px; justify-content:space-between; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:13px; min-width:0;">
+          <img src="assets/pako.jpeg" alt="Pako Porras" style="width:48px; height:48px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #e7b656; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,0.4); flex:0 0 auto;">
+          <div style="min-width:0;">
+            <div style="font-family:'Space Mono', monospace; font-weight:700; font-size:25px; letter-spacing:2px; line-height:1; color:#f7d684; text-shadow:0 0 14px rgba(231,182,86,0.45);">MEGAPORRA</div>
+            <div style="font-family:'Space Mono', monospace; font-weight:400; font-size:10.5px; letter-spacing:5.5px; color:#b08a3e; margin-top:3px;">C O R P O R A T I O N</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-family:'Space Mono', monospace; font-size:9.5px; letter-spacing:1.6px; color:#1a1205; background:linear-gradient(160deg,#f7d684,#d2a23f); padding:6px 11px; border-radius:6px; font-weight:700;">LA MÁS AMBICIOSA EDICIÓN</div>
+        </div>
+      </div>
+      <div style="font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:2.2px; color:#8a8170; margin-top:9px;">QUINIELA IMPERIAL · MUNDIAL 2026 · EE.UU · MÉXICO · CANADÁ</div>
+
+      <div style="display:flex; gap:8px; margin:13px 0 14px;">
+        <div onClick="{{ goClas }}" style="{{ clasTabStyle }}">LA CLASIFICACIÓN</div>
+        <div onClick="{{ goBusca }}" style="{{ buscaTabStyle }}">BÚSCATE</div>
+      </div>
+    </div>
+  </header>
+
+  <main style="position:relative; z-index:1; max-width:1120px; margin:0 auto; padding:20px 18px 60px;">
+
+    <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; align-items:center; gap:16px; padding:30px; border:1px solid rgba(231,182,86,0.18); border-radius:14px; background:#161b27;">
+        <img src="assets/becario.jpeg" style="width:54px; height:54px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #46b884;">
+        <div style="font-family:'Spectral', serif; font-style:italic; font-size:16px; color:#bfb6a3;">El Becario está interrogando al HAL200. Aguardad, fauna variada…</div>
+      </div>
+    </sc-if>
+
+    <!-- =================== CLASIFICACIÓN =================== -->
+    <sc-if value="{{ isClas }}" hint-placeholder-val="{{ true }}">
+    <div>
+
+      <!-- jornada rail -->
+      <div style="margin-bottom:18px;">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:9px;">
+          <div style="font-family:'Space Mono', monospace; font-size:11px; letter-spacing:2px; color:#8a8170;">DESPLIEGUE POR JORNADAS</div>
+          <div style="font-family:'Space Mono', monospace; font-size:11px; letter-spacing:1px; color:#b08a3e;">{{ phaseLabel }}</div>
+        </div>
+        <div ref="{{ railRef }}" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
+          <sc-for list="{{ jornadas }}" as="j" hint-placeholder-count="8">
+            <div onClick="{{ j.onClick }}" style="{{ j.style }}">
+              <span style="font-size:8.5px; letter-spacing:1.5px; opacity:.7;">JOR</span>
+              <span style="font-size:17px; font-weight:700; line-height:1;">{{ j.n }}</span>
+              <span style="font-size:8px; letter-spacing:.5px; opacity:.85;">{{ j.tag }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- podium -->
+      <div style="margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:11px; margin-bottom:13px;">
+          <div style="font-family:'Space Mono', monospace; font-weight:700; font-size:14px; letter-spacing:2.5px; color:#f7d684;">EL PODIO DEL IMPERIO</div>
+          <div style="flex:1; height:1px; background:linear-gradient(90deg, rgba(231,182,86,0.4), transparent);"></div>
+        </div>
+        <div style="display:flex; align-items:center gap:8px; gap:11px; margin-bottom:12px;">
+          <img src="assets/pako.jpeg" style="width:30px; height:30px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:1.5px solid #e7b656;">
+          <div style="font-family:'Spectral', serif; font-style:italic; font-size:13.5px; color:#bfb6a3;">Bajo la atenta mirada del caudillo Pako Porras y su séquito de aduladores.</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
+          <sc-for list="{{ podium }}" as="p" hint-placeholder-count="3">
+            <div style="{{ p.cardStyle }}">
+              <div style="{{ p.glowStyle }}"></div>
+              <div style="position:relative; display:flex; align-items:center; justify-content:space-between;">
+                <div style="{{ p.medalStyle }}">{{ p.pos }}</div>
+                <div style="font-family:'Space Mono', monospace; font-size:8.5px; letter-spacing:1.5px; color:#8a8170;">{{ p.label }}</div>
+              </div>
+              <div style="{{ p.nameStyle }}">{{ p.name }}</div>
+              <div style="position:relative; display:flex; align-items:baseline; gap:5px; margin-top:3px;">
+                <span style="{{ p.ptsStyle }}">{{ p.pts }}</span>
+                <span style="font-family:'Space Mono', monospace; font-size:11px; color:#8a8170;">pts</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- ranking list -->
+      <div style="margin-top:22px; border:1px solid rgba(231,182,86,0.16); border-radius:14px; overflow:hidden; background:#13182260;">
+        <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid rgba(231,182,86,0.16); background:#161b27;">
+          <div style="font-family:'Space Mono', monospace; font-weight:700; font-size:13px; letter-spacing:1.5px; color:#f7d684; flex:0 0 auto;">CLASIFICACIÓN GENERAL</div>
+          <div style="font-family:'Space Mono', monospace; font-size:10px; color:#8a8170; flex:0 0 auto;">· {{ totalCount }}</div>
+          <div style="flex:1;"></div>
+          <input value="{{ filter }}" onInput="{{ onFilter }}" placeholder="Filtrar nombre…" style="background:#0e1016; border:1px solid rgba(231,182,86,0.22); color:#ece3d2; border-radius:8px; padding:8px 11px; font-size:13px; width:150px; outline:none;">
+        </div>
+
+        <div style="display:flex; align-items:center; gap:14px; padding:8px 16px; border-bottom:1px solid rgba(255,255,255,0.06); font-family:'Space Mono', monospace; font-size:9.5px; letter-spacing:1.5px; color:#766f5f;">
+          <span style="width:34px; text-align:center; flex:0 0 auto;">POS</span>
+          <span style="width:18px; flex:0 0 auto;"></span>
+          <span style="flex:1 1 auto;">APOSTANTE</span>
+          <sc-if value="{{ showSpark }}" hint-placeholder-val="{{ false }}"><span style="flex:0 0 auto; width:60px; text-align:center;">J1–J4</span></sc-if>
+          <span style="flex:0 0 auto; text-align:right; min-width:46px;">PTS</span>
+        </div>
+
+        <sc-for list="{{ rows }}" as="row" hint-placeholder-count="14">
+          <sc-if value="{{ row.isMiseryStart }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; gap:11px; padding:11px 16px; background:linear-gradient(90deg, rgba(221,93,66,0.18), rgba(221,93,66,0.02)); border-top:1px solid rgba(221,93,66,0.35); border-bottom:1px solid rgba(221,93,66,0.25);">
+              <img src="assets/madre.jpeg" style="width:30px; height:30px; border-radius:50%; object-fit:cover; object-position:50% 38%; border:1.5px solid #dd5d42; flex:0 0 auto;">
+              <div style="min-width:0;">
+                <div style="font-family:'Space Mono', monospace; font-weight:700; font-size:11px; letter-spacing:1.5px; color:#dd5d42;">ZONA DE MISERIA · LOS ÚLTIMOS 10</div>
+                <div style="font-family:'Spectral', serif; font-style:italic; font-size:12px; color:#b8a99c;">Vigilada por Madre desde el terrado, trampa para ratas cebada.</div>
+              </div>
+            </div>
+          </sc-if>
+          <div onClick="{{ row.onClick }}" style="{{ row.style }}">
+            <div style="{{ row.posStyle }}">{{ row.pos }}</div>
+            <div style="{{ row.arrowStyle }}">{{ row.arrow }}</div>
+            <div style="{{ row.nameWrap }}">
+              <div style="{{ row.nameStyle }}">{{ row.name }}</div>
+              <sc-if value="{{ row.hasTag }}" hint-placeholder-val="{{ false }}">
+                <div style="{{ row.tagStyle }}">{{ row.tag }}</div>
+              </sc-if>
+            </div>
+            <sc-if value="{{ showSpark }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:flex-end; gap:3px; height:28px; flex:0 0 auto;">
+                <sc-for list="{{ row.spark }}" as="b" hint-placeholder-count="4">
+                  <div style="{{ b.track }}" title="{{ b.title }}"><div style="{{ b.fill }}"></div></div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <div style="{{ row.ptsStyle }}">{{ row.pts }}</div>
+          </div>
+        </sc-for>
+
+        <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:34px 16px; text-align:center; font-family:'Spectral', serif; font-style:italic; color:#8a8170; font-size:14px;">Ningún apostante responde a ese nombre. El HAL200 se encoge de hombros.</div>
+        </sc-if>
+      </div>
+
+      <!-- becario update stamp -->
+      <div style="display:flex; align-items:center; gap:13px; margin-top:20px; padding:14px 16px; border:1px dashed rgba(70,184,132,0.4); border-radius:12px; background:rgba(20,58,43,0.22);">
+        <img src="assets/becario.jpeg" style="width:42px; height:42px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #46b884; flex:0 0 auto;">
+        <div style="font-family:'Spectral', serif; font-style:italic; font-size:13.5px; color:#bfb6a3; line-height:1.5;">El Becario actualizó el marcador el <span style="color:#7fd3a8; font-style:normal; font-family:'Space Mono', monospace; font-size:12px;">14·06·2026</span> tras varias horas frente al HAL200.</div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <!-- =================== BÚSCATE =================== -->
+    <sc-if value="{{ isBusca }}" hint-placeholder-val="{{ false }}">
+    <div>
+
+      <div style="position:relative; border:1px solid rgba(231,182,86,0.2); border-radius:16px; padding:26px 22px; background:linear-gradient(160deg, #1a2030, #13182280); overflow:hidden;">
+        <div style="position:absolute; top:-40px; right:-30px; width:180px; height:180px; background:radial-gradient(circle, rgba(231,182,86,0.16), transparent 70%); pointer-events:none;"></div>
+        <div style="display:flex; align-items:center; gap:13px; margin-bottom:6px;">
+          <img src="assets/pamela.jpeg" style="width:46px; height:46px; border-radius:50%; object-fit:cover; object-position:50% 26%; border:2px solid #e7b656; flex:0 0 auto;">
+          <div style="font-family:'Space Mono', monospace; font-size:10px; letter-spacing:2px; color:#b08a3e;">DEPARTAMENTO DE RECLAMACIONES · PAMELA</div>
+        </div>
+        <h1 style="font-family:'Space Mono', monospace; font-weight:700; font-size:23px; line-height:1.15; letter-spacing:0.5px; color:#f7d684; margin:8px 0 7px; text-shadow:0 0 16px rgba(231,182,86,0.3);">Localiza tu miserable posición en el Imperio</h1>
+        <p style="font-family:'Spectral', serif; font-size:15px; color:#bfb6a3; margin:0 0 18px; max-width:560px;">Escribe tu alias de guerra. El HAL200 hará el resto y Pamela despachará tu reclamación sin miramientos.</p>
+        <div style="position:relative; max-width:480px;">
+          <input value="{{ query }}" onInput="{{ onQuery }}" onKeyDown="{{ onSearchKey }}" placeholder="Tu alias de apostante…" style="width:100%; background:#0e1016; border:1.5px solid rgba(231,182,86,0.35); color:#ece3d2; border-radius:11px; padding:15px 16px; font-size:16px; outline:none; box-shadow:0 0 24px rgba(231,182,86,0.08);">
+          <sc-if value="{{ hasSuggestions }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; top:calc(100% + 6px); left:0; right:0; background:#1a2030; border:1px solid rgba(231,182,86,0.3); border-radius:11px; overflow:hidden; z-index:20; box-shadow:0 16px 40px rgba(0,0,0,0.55);">
+              <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="5">
+                <div onClick="{{ s.onClick }}" style="display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <span style="font-family:'Space Mono', monospace; font-size:11px; color:#b08a3e; min-width:34px;">#{{ s.pos }}</span>
+                  <span style="font-weight:600; font-size:14px; color:#ece3d2; flex:1;">{{ s.name }}</span>
+                  <span style="font-family:'Space Mono', monospace; font-size:13px; color:#e7b656;">{{ s.pts }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ showExamples }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; align-items:center; gap:8px; margin-top:16px; flex-wrap:wrap;">
+            <span style="font-family:'Space Mono', monospace; font-size:10px; letter-spacing:1px; color:#766f5f;">PRUEBA:</span>
+            <sc-for list="{{ examples }}" as="ex" hint-placeholder-count="3">
+              <div onClick="{{ ex.onClick }}" style="font-family:'Space Mono', monospace; font-size:12px; color:#ece3d2; padding:6px 12px; border:1px solid rgba(231,182,86,0.3); border-radius:20px; cursor:pointer; background:rgba(231,182,86,0.06);">{{ ex.name }}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- dossier -->
+      <sc-if value="{{ hasMe }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:18px;">
+          <div style="{{ me.bannerStyle }}">
+            <div style="font-family:'Space Mono', monospace; font-size:10px; letter-spacing:2.5px; opacity:.9;">{{ me.vtag }}</div>
+            <div style="display:flex; align-items:flex-end; gap:14px; margin-top:8px; flex-wrap:wrap;">
+              <div style="font-family:'Space Mono', monospace; font-weight:700; font-size:46px; line-height:.9;">{{ me.posLabel }}</div>
+              <div style="padding-bottom:6px;">
+                <div style="font-family:Archivo; font-weight:800; font-size:24px; line-height:1; letter-spacing:.3px;">{{ me.name }}</div>
+                <div style="font-family:'Space Mono', monospace; font-size:12px; opacity:.75; margin-top:4px;">de {{ me.n }} apostantes · {{ me.pts }} pts</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:13px; padding:18px 20px; border:1px solid rgba(231,182,86,0.18); border-radius:14px; background:#161b27;">
+            <div style="display:flex; align-items:flex-start; gap:13px;">
+              <img src="assets/pako.jpeg" style="width:40px; height:40px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #e7b656; flex:0 0 auto;">
+              <div>
+                <div style="font-family:'Spectral', serif; font-weight:600; font-size:18px; color:#f7d684; line-height:1.25;">{{ me.vtitle }}</div>
+                <div style="font-family:'Spectral', serif; font-style:italic; font-size:15px; color:#cabfa9; line-height:1.55; margin-top:7px;">{{ me.vbody }}</div>
+                <div style="font-family:'Space Mono', monospace; font-size:10px; letter-spacing:1px; color:#766f5f; margin-top:11px;">— Crónica firmada por el caudillo Pako Porras</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:11px; margin-top:13px;">
+            <div style="padding:15px 16px; border:1px solid rgba(231,182,86,0.16); border-radius:12px; background:#13182280;">
+              <div style="font-family:'Space Mono', monospace; font-size:9.5px; letter-spacing:1.5px; color:#8a8170;">PARA SALTAR AL PODIO</div>
+              <div style="{{ me.top3Style }}">{{ me.top3Label }}</div>
+              <div style="font-family:'Spectral', serif; font-style:italic; font-size:12px; color:#8a8170; margin-top:3px;">{{ me.top3Sub }}</div>
+            </div>
+            <div style="padding:15px 16px; border:1px solid rgba(221,93,66,0.22); border-radius:12px; background:#13182280;">
+              <div style="font-family:'Space Mono', monospace; font-size:9.5px; letter-spacing:1.5px; color:#8a8170;">COLCHÓN ANTE LA MISERIA</div>
+              <div style="{{ me.cushionStyle }}">{{ me.cushionLabel }}</div>
+              <div style="font-family:'Spectral', serif; font-style:italic; font-size:12px; color:#8a8170; margin-top:3px;">{{ me.cushionSub }}</div>
+            </div>
+          </div>
+
+          <div style="margin-top:13px; border:1px solid rgba(231,182,86,0.16); border-radius:14px; overflow:hidden;">
+            <div style="padding:11px 15px; background:#161b27; border-bottom:1px solid rgba(231,182,86,0.16); display:flex; align-items:center; gap:8px;">
+              <span style="font-family:'Space Mono', monospace; font-size:10px; letter-spacing:1.5px; color:#f7d684;">QUIÉN TE RODEA EN EL ESCALAFÓN</span>
+              <span style="font-family:'Spectral', serif; font-style:italic; font-size:12px; color:#8a8170;">— tres por arriba, tres por abajo</span>
+            </div>
+            <sc-for list="{{ me.neighbors }}" as="nb" hint-placeholder-count="7">
+              <div onClick="{{ nb.onClick }}" style="{{ nb.rowStyle }}">
+                <span style="{{ nb.posStyle }}">{{ nb.posLabel }}</span>
+                <span style="{{ nb.nameStyle }}">{{ nb.name }}</span>
+                <span style="{{ nb.ptsStyle }}">{{ nb.pts }} pts</span>
+                <span style="{{ nb.deltaStyle }}">{{ nb.deltaLabel }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:11px; margin-top:14px; padding:13px 15px; border-radius:12px; background:rgba(231,182,86,0.06); border:1px dashed rgba(231,182,86,0.3);">
+            <img src="assets/pamela.jpeg" style="width:34px; height:34px; border-radius:50%; object-fit:cover; object-position:50% 26%; border:1.5px solid #e7b656; flex:0 0 auto;">
+            <div style="font-family:'Spectral', serif; font-style:italic; font-size:13px; color:#bfb6a3;">Reclamación despachada por Pamela. Si no estás conforme, ya sabes dónde no quejarte.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showIdle }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top:22px; text-align:center; padding:30px 20px;">
+          <img src="assets/becario.jpeg" style="width:64px; height:64px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid rgba(70,184,132,0.5); opacity:.85;">
+          <div style="font-family:'Spectral', serif; font-style:italic; font-size:15px; color:#8a8170; margin-top:14px; max-width:420px; margin-left:auto; margin-right:auto;">Distinguido megaporrero: aún no has tecleado tu nombre. El HAL200 aguarda. El Becario, también.</div>
+        </div>
+      </sc-if>
+
+    </div>
+    </sc-if>
+
+  </main>
+
+  <footer style="position:relative; z-index:1; max-width:1120px; margin:0 auto; padding:22px 18px 40px; border-top:1px solid rgba(231,182,86,0.12);">
+    <div style="font-family:'Spectral', serif; font-style:italic; font-size:13px; color:#8a8170; line-height:1.6;">Crónica oficial firmada por el caudillo <span style="color:#e7b656; font-style:normal;">Pako Porras</span>. Datos custodiados por el Becario en el HAL200. Reclamaciones a Pamela. Quejas, a Madre — bajo vuestra entera responsabilidad.</div>
+    <div style="font-family:'Space Mono', monospace; font-size:9.5px; letter-spacing:1.5px; color:#5a5444; margin-top:9px;">MEGAPORRA CORPORATION © MUNDIAL 2026</div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { view:'clasificacion', jornada:4, query:'', filter:'', selectedName:null, ready:false, isMobile:(typeof window!=='undefined' && window.innerWidth<760) };
+
+  _setRail = (el) => { this._rail = el; if (el) this.scrollRail(); };
+  scrollRail(){
+    const r = this._rail; if (!r) return;
+    requestAnimationFrame(() => {
+      if (!this._rail) return;
+      const idx = this.state.jornada - 1;
+      const chip = this._rail.children[idx];
+      if (!chip) return;
+      const target = chip.offsetLeft + chip.offsetWidth - this._rail.clientWidth + 14;
+      this._rail.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+    });
+  }
+  componentDidUpdate(prevProps, prevState){
+    if (!prevState) { this.scrollRail(); return; }
+    if (prevState.ready !== this.state.ready || prevState.jornada !== this.state.jornada || prevState.view !== this.state.view) this.scrollRail();
+  }
+
+  componentDidMount(){
+    const check = () => { if (window.MEGAPORRA_DATA){ this.setState({ ready:true }); return true; } return false; };
+    if (!check()) this._tick = setInterval(() => { if (check()) clearInterval(this._tick); }, 60);
+    this._rz = () => { const mb = window.innerWidth < 760; if (mb !== this.state.isMobile) this.setState({ isMobile: mb }); };
+    window.addEventListener('resize', this._rz);
+  }
+  componentWillUnmount(){ if (this._tick) clearInterval(this._tick); window.removeEventListener('resize', this._rz); }
+
+  norm(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  cum(sc,u){ let s=0; for(let i=0;i<u;i++){ if(sc[i]!=null) s+=sc[i]; } return s; }
+  ranking(u){
+    const data = window.MEGAPORRA_DATA || [];
+    const arr = data.map((d,i)=>({ name:d.name, scores:d.scores, pts:this.cum(d.scores,u), idx:i }));
+    arr.sort((a,b)=> b.pts-a.pts || a.idx-b.idx);
+    let lp=null, lr=0;
+    arr.forEach((e,i)=>{ if(e.pts===lp){ e.pos=lr; } else { e.pos=i+1; lr=i+1; lp=e.pts; } });
+    return arr;
+  }
+  // 100% offline. Texts are picked deterministically by position — no AI, no network. Thresholds are relative to n, so they keep working as the tournament grows.
+  verdict(pos,n,pts){
+    const pick = (a)=> a[pos % a.length];
+    if(pos===1) return { tag:'EL CAUDILLO EN PERSONA', title:'Encabezas el marcador con autoridad imperial.', body: pick([
+      'Los demás, lamiendo el polvo de tus botas. Disfruta de la cima — el Mundial es largo y la gloria, traicionera.',
+      'El Becario ha enmarcado tu alias y Pamela rechaza ya, de oficio, cualquier reclamación presentada contra ti.' ]) };
+    if(pos<=3) return { tag:'PODIO IMPERIAL', title:'Respiras el aire enrarecido de la cumbre.', body: pick([
+      'A un solo traspié del trono. El caudillo te observa con algo sospechosamente parecido al respeto. No lo estropees.',
+      'Hueles el metal de las medallas. Sonríe para la foto oficial antes de que todo, inevitablemente, se tuerza.' ]) };
+    if(pos<=Math.ceil(n*0.15)) return { tag:'CORTESANO DE CONFIANZA', title:'Cabalgas en la vanguardia del ejército apostante.', body: pick([
+      'Tu posición honra a la Corporación. Mantén el pulso firme y la mirada clavada en el podio.',
+      'El caudillo te incluiría en su séquito de aduladores de confianza. Viniendo de él, es casi una condecoración.' ]) };
+    if(pos<=Math.ceil(n*0.5)) return { tag:'SÚBDITO CORRIENTE', title:'Sobrevives en la dorada medianía del Imperio.', body: pick([
+      'Ni gloria ni miseria: la tibieza de quien aún no ha jurado lealtad a bando alguno. El caudillo apenas recuerda tu alias.',
+      'Una posición tan razonable como olvidable. El HAL200 te tiene registrado, pero en letra muy pequeña.' ]) };
+    if(pos<=n-10) return { tag:'CARNE DE CAÑÓN', title:'Te arrastras por los suburbios de la clasificación.', body: pick([
+      'No es aún la deshonra absoluta, pero Madre ya te vigila desde el terrado. Reacciona antes de que cebe la trampa.',
+      'Cada jornada te empuja un palmo más hacia el precipicio. Pamela ya tiene a mano tu carpeta de reclamaciones.' ]) };
+    return { tag:'ZONA DE MISERIA', title:'Habitas el fango de los últimos diez.', body: pick([
+      'Te transmitimos toda nuestra solidaridad imperial, que no es mucha. Madre te ha reservado un plato de su estofado de nutria. No se conoce escapatoria.',
+      'El sótano del Imperio luce tu nombre en la puerta. Madre ha cebado la trampa para ratas y el Becario ha dejado de actualizar tu casilla, por pura lástima.' ]) };
+  }
+
+  renderVals(){
+    const m = this.state.isMobile;
+    const C = { bg:'#0e1016', panel:'#161b27', gold:'#e7b656', goldB:'#f7d684', goldD:'#a9843c',
+      green:'#46b884', cream:'#ece3d2', soft:'#bfb6a3', muted:'#8a8170', up:'#46b884', down:'#dd5d42', same:'#766f5f', red:'#dd5d42', hair:'rgba(255,255,255,0.06)' };
+    const mono = '"Space Mono", monospace';
+    const ready = this.state.ready;
+    const u = this.state.jornada;
+    const cur = ready ? this.ranking(u) : [];
+    const prev = (ready && u>1) ? this.ranking(u-1) : null;
+    const pmap = {}; if(prev) prev.forEach(e=> pmap[e.name]=e.pos);
+    const n = cur.length;
+    const miseryStart = n>10 ? n-10 : -1;
+    const top3pts = cur[2] ? cur[2].pts : 0;
+    const miseryTopPts = (miseryStart>=0 && cur[miseryStart]) ? cur[miseryStart].pts : 0;
+
+    // ---- tabs ----
+    const tabBase = { flex:'1 1 0', padding: m?'12px 6px':'13px 16px', textAlign:'center', cursor:'pointer', fontFamily:mono, fontWeight:700, fontSize:m?'11.5px':'13px', letterSpacing:'1.5px', borderRadius:'10px', whiteSpace:'nowrap' };
+    const tabAct = Object.assign({}, tabBase, { background:'linear-gradient(160deg,#f7d684,#d2a23f)', color:'#1a1205', boxShadow:'0 3px 14px rgba(231,182,86,0.3)' });
+    const tabIdle = Object.assign({}, tabBase, { background:'transparent', color:C.muted, border:'1px solid rgba(231,182,86,0.18)' });
+    const isClas = this.state.view==='clasificacion';
+    const isBusca = this.state.view==='buscate';
+
+    // ---- jornadas ----
+    const jdates = ['11·06','12·06','13·06','14·06'];
+    const jornadas = [];
+    for(let k=1;k<=12;k++){
+      const played = k<=4; const active = (k===u);
+      const st = { flex:'0 0 auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'1px',
+        minWidth:'54px', height:'56px', padding:'0 12px', borderRadius:'11px', cursor: played?'pointer':'not-allowed',
+        fontFamily:mono,
+        background: active?'linear-gradient(160deg,#f7d684,#d2a23f)' : played?'rgba(255,255,255,0.05)':'transparent',
+        border:'1px solid '+(active?'transparent': played?'rgba(231,182,86,0.22)':'rgba(255,255,255,0.06)'),
+        color: active?'#1a1205': played?C.cream:C.muted,
+        boxShadow: active?'0 3px 14px rgba(231,182,86,0.32)':'none', opacity: played?1:0.5 };
+      jornadas.push({ n:k, tag: active?'AHORA':(played?jdates[k-1]:'—'), style:st,
+        onClick: played ? (()=> this.setState({ jornada:k })) : (()=>{}) });
+    }
+
+    // ---- podium ----
+    const medals = ['#f7d684','#d7dbe2','#cd9351'];
+    const plabels = ['CAMPEÓN PROVISIONAL','SUBCAMPEÓN','MEDALLA DE BRONCE'];
+    const podium = cur.slice(0,3).map((e,k)=>{
+      const c = medals[k];
+      return { pos:e.pos, name:e.name, pts:e.pts, label:plabels[k],
+        cardStyle:{ position:'relative', overflow:'hidden', padding:'15px 16px 16px', borderRadius:'14px',
+          background: k===0?'linear-gradient(165deg, rgba(231,182,86,0.18), rgba(231,182,86,0.03))':'#161b27',
+          border:'1px solid '+(k===0?'rgba(231,182,86,0.5)':'rgba(255,255,255,0.09)') },
+        glowStyle:{ position:'absolute', top:'-30px', right:'-20px', width:'120px', height:'120px', borderRadius:'50%',
+          background:'radial-gradient(circle, '+c+'33, transparent 70%)', pointerEvents:'none', animation:'mpSpot 4s ease-in-out infinite' },
+        medalStyle:{ width:'30px', height:'30px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
+          fontFamily:mono, fontWeight:700, fontSize:'14px', color:'#1a1205', background:c, boxShadow:'0 2px 10px '+c+'66' },
+        nameStyle:{ position:'relative', fontFamily:'Archivo', fontWeight:800, fontSize:k===0?'19px':'17px', color: k===0?C.goldB:C.cream, marginTop:'11px', lineHeight:1.1, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' },
+        ptsStyle:{ fontFamily:mono, fontWeight:700, fontSize:k===0?'30px':'25px', color:c, lineHeight:1 } };
+    });
+
+    // ---- rows (the list filter is independent from the Búscate search) ----
+    const fq = this.norm(this.state.filter || '');
+    const filtered = (isClas && fq.length>=1) ? cur.filter(e=> this.norm(e.name).includes(fq)) : cur;
+    const p1 = cur[0] ? cur[0].pts : 0;
+    const rows = filtered.map((e)=>{
+      const idx = cur.indexOf(e);
+      const top = e.pos<=3, mis = miseryStart>=0 && idx>=miseryStart;
+      let arrow='·', aCol=C.same;
+      if(prev){ const pp = pmap[e.name]; if(pp!=null){ const d=pp-e.pos; if(d>0){arrow='▲';aCol=C.up;} else if(d<0){arrow='▼';aCol=C.down;} else {arrow='=';aCol=C.same;} } else {arrow='+';aCol=C.gold;} }
+      // gamified micro-tag, only for apostantes near a frontier (deterministic, robust as the tournament grows)
+      let tag=null, tagColor=C.muted;
+      if(e.pos===1){ tag='manda en el Imperio con mano de hierro'; tagColor=C.goldB; }
+      else if(top){ const dt=p1-e.pts; tag = dt<=0 ? 'empatado con el mismísimo trono' : ('a '+dt+' pts del trono'); tagColor=C.goldB; }
+      else if(!mis){
+        const dPod = top3pts - e.pts, dMis = e.pts - miseryTopPts;
+        if(dPod>0 && dPod<=8){ tag = ['a '+dPod+' pts de tocar la gloria','a '+dPod+' pts de oler el bronce','el podio a tiro de '+dPod+' pts'][e.pos%3]; tagColor=C.goldB; }
+        else if(dMis>=0 && dMis<=6){ tag = ['a '+dMis+' pts de cenar nutria con Madre','a '+dMis+' pts del precipicio imperial','Madre afila la trampa: '+dMis+' pts'][e.pos%3]; tagColor=C.red; }
+      } else {
+        tag = ['Madre ya calienta el estofado','solidaridad imperial (más bien poca)','polvo, escombro y deshonra','el HAL200 ni se molesta en registrarte'][e.pos%4]; tagColor=C.red;
+      }
+      const spark = e.scores.map((sc,si)=>{ const v = sc==null?0:sc; const h = Math.max(0, Math.round((v/24)*100));
+        return { title:'Jornada '+(si+1)+' · '+(sc==null?'sin jugar':sc+' pts'),
+          track:{ width:'5px', height:'26px', background:'rgba(255,255,255,0.06)', borderRadius:'2px', display:'flex', alignItems:'flex-end', overflow:'hidden' },
+          fill:{ width:'100%', height:h+'%', background:'linear-gradient(180deg,#f7d684,#c79433)', borderRadius:'2px' } }; });
+      return { name:e.name, pos:e.pos, pts:e.pts, arrow,
+        isMiseryStart: fq.length<1 && idx===miseryStart,
+        hasTag: !!tag, tag,
+        onClick: (()=> this.setState({ view:'buscate', selectedName:e.name, query:e.name })),
+        style:{ display:'flex', alignItems:'center', gap: m?'10px':'14px', padding: m?'7px 12px':'8px 16px', minHeight:(m?54:58)+'px', cursor:'pointer', borderBottom:'1px solid '+C.hair,
+          background: top?'linear-gradient(90deg, rgba(231,182,86,0.12), rgba(231,182,86,0.015))' : mis?'linear-gradient(90deg, rgba(221,93,66,0.1), rgba(221,93,66,0.01))' : (idx%2?'rgba(255,255,255,0.012)':'transparent'),
+          borderLeft:'3px solid '+(top?C.gold: mis?C.red:'transparent') },
+        posStyle:{ flex:'0 0 auto', width:m?'30px':'34px', height:m?'30px':'34px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:mono, fontWeight:700, fontSize:m?'12px':'13px',
+          color: top?'#1a1205': mis?C.red:C.soft,
+          background: top?'linear-gradient(160deg,#f7d684,#d2a23f)':'rgba(255,255,255,0.05)',
+          border: mis?'1.5px solid '+C.red:(top?'none':'1px solid rgba(255,255,255,0.08)'),
+          boxShadow: top?'0 2px 10px rgba(231,182,86,0.4)':'none' },
+        arrowStyle:{ flex:'0 0 auto', width:'18px', textAlign:'center', fontSize:'12px', color:aCol, fontFamily:mono },
+        nameWrap:{ flex:'1 1 auto', minWidth:0, display:'flex', flexDirection:'column', justifyContent:'center', gap:'2px' },
+        nameStyle:{ minWidth:0, fontFamily:'Archivo', fontWeight: top?700:600, fontSize:m?'14px':'15.5px', color: top?C.goldB: mis?'#e7b8ad':C.cream, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', letterSpacing:'0.1px' },
+        tagStyle:{ fontFamily:mono, fontSize:m?'9.5px':'10.5px', fontWeight:700, letterSpacing:'0.2px', color:tagColor, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' },
+        ptsStyle:{ flex:'0 0 auto', fontFamily:mono, fontWeight:700, fontSize: top?(m?'17px':'20px'):(m?'15px':'17px'), color: top?C.goldB:C.gold, minWidth:m?'34px':'46px', textAlign:'right' },
+        spark };
+    });
+
+    // ---- búscate ----
+    const sq = this.norm(this.state.query);
+    const matchingSel = this.state.selectedName && this.norm(this.state.selectedName)===sq;
+    const suggestions = (ready && isBusca && sq.length>=1 && !matchingSel)
+      ? cur.filter(e=> this.norm(e.name).includes(sq)).slice(0,7).map(e=>({ name:e.name, pos:e.pos, pts:e.pts, onClick:(()=> this.setState({ selectedName:e.name, query:e.name })) }))
+      : [];
+
+    let me = null;
+    if(ready && this.state.selectedName){
+      const i = cur.findIndex(e=> e.name===this.state.selectedName);
+      if(i>=0){
+        const e = cur[i];
+        const inTop3 = e.pos<=3;
+        const inMis = miseryStart>=0 && i>=miseryStart;
+        const v = this.verdict(e.pos, n, e.pts);
+        const accent = inTop3?C.goldB : inMis?C.red : C.cream;
+        const lo = Math.max(0, i-3), hi = Math.min(n-1, i+3), neighbors = [];
+        for(let k=lo;k<=hi;k++){ const x=cur[k]; const meRow=(k===i); const ab=(k<i); const d=x.pts-e.pts;
+          neighbors.push({ posLabel:'#'+x.pos, name:x.name, pts:x.pts,
+            onClick: meRow ? (()=>{}) : (()=> this.setState({ selectedName:x.name, query:x.name })),
+            rowStyle:{ display:'flex', alignItems:'center', gap:'12px', padding:'12px 15px', cursor: meRow?'default':'pointer', borderBottom:'1px solid rgba(255,255,255,0.05)',
+              background: meRow ? 'linear-gradient(90deg, rgba(231,182,86,0.2), rgba(231,182,86,0.03))' : (ab ? 'rgba(70,184,132,0.05)' : 'rgba(221,93,66,0.045)') },
+            posStyle:{ fontFamily:mono, fontSize:'11px', fontWeight:700, color: meRow?C.goldB:C.muted, width:'42px', flex:'0 0 auto' },
+            nameStyle:{ flex:'1 1 auto', minWidth:0, fontFamily:'Archivo', fontWeight:meRow?800:600, fontSize:'15px', color: meRow?C.goldB:C.cream, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' },
+            ptsStyle:{ fontFamily:mono, fontWeight:700, fontSize:'13px', color: meRow?C.goldB:C.soft, flex:'0 0 auto' },
+            deltaLabel: meRow ? '◆ TÚ' : (d>0?('+'+d):(d<0?('−'+Math.abs(d)):'=')),
+            deltaStyle:{ fontFamily:mono, fontSize:'12px', fontWeight:700, color: meRow?C.goldB:(ab?C.green:C.red), width:'50px', textAlign:'right', flex:'0 0 auto' } });
+        }
+        me = { name:e.name, pos:e.pos, posLabel:'#'+e.pos, pts:e.pts, n, neighbors,
+          inTop3, top3Label: inTop3?'EN EL PODIO':((top3pts-e.pts)+' pts'), top3Sub: inTop3?'ya reinas en la cumbre':'para asaltar el podio imperial',
+          inMis, cushionLabel: inMis?'¡DENTRO!':((e.pts-miseryTopPts)+' pts'), cushionSub: inMis?'Madre ya te tiene fichado':'antes de hundirte en la miseria',
+          vtag:v.tag, vtitle:v.title, vbody:v.body,
+          top3Style:{ fontFamily:mono, fontWeight:700, fontSize: inTop3?'18px':'26px', color: inTop3?C.green:C.goldB, marginTop:'5px' },
+          cushionStyle:{ fontFamily:mono, fontWeight:700, fontSize: inMis?'18px':'26px', color: inMis?C.red:C.cream, marginTop:'5px' },
+          bannerStyle:{ padding:'20px 22px', borderRadius:'16px',
+            background: inTop3?'linear-gradient(150deg, rgba(231,182,86,0.22), rgba(231,182,86,0.05))' : inMis?'linear-gradient(150deg, rgba(221,93,66,0.22), rgba(221,93,66,0.04))' : 'linear-gradient(150deg, #1c2231, #161b27)',
+            border:'1px solid '+(inTop3?'rgba(231,182,86,0.5)': inMis?'rgba(221,93,66,0.5)':'rgba(255,255,255,0.1)'),
+            color: accent } };
+      }
+    }
+
+    const examples = ready ? [cur[0], cur[Math.floor(n*0.5)], cur[n-1]].filter(Boolean).map(e=>({ name:e.name, onClick:(()=> this.setState({ selectedName:e.name, query:e.name })) })) : [];
+
+    const onQuery = (ev)=> this.setState({ query: ev.target.value, selectedName:null });
+    const onFilter = (ev)=> this.setState({ filter: ev.target.value });
+    const onSearchKey = (ev)=>{ if(ev.key==='Enter' && suggestions.length){ const s=suggestions[0]; this.setState({ selectedName:s.name, query:s.name }); } };
+
+    return {
+      isClas, isBusca, notReady: !ready,
+      goClas: ()=> this.setState({ view:'clasificacion' }),
+      goBusca: ()=> this.setState({ view:'buscate' }),
+      clasTabStyle: isClas?tabAct:tabIdle, buscaTabStyle: isBusca?tabAct:tabIdle,
+      phaseLabel:'Fase de Grupos', totalCount: ready?(n+' apostantes'):'… apostantes',
+      jornadas, podium, rows, railRef: this._setRail,
+      showSpark: !m && ready,
+      noResults: isClas && ready && fq.length>=1 && rows.length===0,
+      query: this.state.query, onQuery, onSearchKey,
+      filter: this.state.filter, onFilter,
+      suggestions, hasSuggestions: suggestions.length>0,
+      examples, showExamples: ready && !this.state.selectedName,
+      me, hasMe: !!me, showIdle: !me
+    };
+  }
+}
+</script>
+</body>
+</html>

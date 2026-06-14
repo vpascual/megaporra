@@ -1,50 +1,35 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-:root {
-  --bg: #0a0f0a;
-  --surface: #111a11;
-  --surface-2: #162116;
-  --border: #1e2e1e;
-  --border-light: #2a3d2a;
-  --text: #c8d5c8;
-  --text-muted: #6b806b;
-  --text-bright: #e8f0e8;
-  --gold: #f5c518;
-  --gold-dim: rgba(245, 197, 24, 0.15);
-  --silver: #b0b8c4;
-  --bronze: #cd7f32;
-  --green: #4ade80;
-  --green-dim: rgba(74, 222, 128, 0.12);
-  --red: #f87171;
-  --red-dim: rgba(248, 113, 113, 0.12);
-  --accent: #22c55e;
-  --accent-dim: rgba(34, 197, 94, 0.15);
-
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text);
-  background: var(--bg);
-}
-
-body {
+html, body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  background: #0e1016;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-#app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+::selection { background: #e7b656; color: #1a1205; }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #11151f; }
+::-webkit-scrollbar-thumb { background: #3a3526; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #5a5236; }
+
+input { font-family: inherit; }
+input::placeholder { color: #6d6655; }
+
+@keyframes mpFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes mpGlow {
+  0%, 100% { opacity: .85; }
+  50%       { opacity: 1; }
+}
+@keyframes mpSpot {
+  0%, 100% { opacity: .5; }
+  50%       { opacity: .9; }
+}
+@keyframes mpSpin {
+  to { transform: rotate(360deg); }
+}
