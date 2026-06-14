@@ -563,10 +563,13 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
         <div :style="`padding:20px 22px; border-radius:16px; background:${mePlayer.bannerBg}; border:1px solid ${mePlayer.bannerBorder}; color:${mePlayer.bannerColor};`">
           <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2.5px; opacity:.9;">{{ mePlayer.vtag }}</div>
           <div style="display:flex; align-items:flex-end; gap:14px; margin-top:8px; flex-wrap:wrap;">
-            <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(32px,8vw,46px); line-height:.9;">#{{ mePlayer.pos }}</div>
-            <div style="padding-bottom:6px;">
-              <div style="font-family:Archivo; font-weight:800; font-size:clamp(16px,4vw,24px); line-height:1; letter-spacing:.3px;">{{ mePlayer.name }}</div>
-              <div style="font-family:'Space Mono',monospace; font-size:12px; opacity:.75; margin-top:4px;">de {{ mePlayer.n }} apostantes · {{ mePlayer.pts }} pts</div>
+            <div style="line-height:.85;">
+              <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(36px,9vw,52px); line-height:.9; letter-spacing:-1px;">{{ mePlayer.pts }}</div>
+              <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(11px,2vw,13px); letter-spacing:3px; opacity:.8; margin-top:4px;">PTS</div>
+            </div>
+            <div style="padding-bottom:4px;">
+              <div style="font-family:Archivo; font-weight:800; font-size:clamp(15px,3.5vw,22px); line-height:1.1; letter-spacing:.3px;">{{ mePlayer.name }}</div>
+              <div style="font-family:'Space Mono',monospace; font-size:11px; opacity:.6; margin-top:5px; letter-spacing:.5px;">#{{ mePlayer.pos }} de {{ mePlayer.n }} apostantes</div>
             </div>
           </div>
         </div>
@@ -606,10 +609,10 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
           <div v-for="nb in mePlayer.neighbors" :key="nb.name"
                @click="selectNeighbor(nb)"
                :style="`display:flex; align-items:center; gap:12px; padding:12px 15px; cursor:${nb.meRow?'default':'pointer'}; border-bottom:1px solid rgba(255,255,255,0.05); background:${nb.meRow?'linear-gradient(90deg,rgba(231,182,86,0.2),rgba(231,182,86,0.03))':nb.ab?'rgba(70,184,132,0.05)':'rgba(221,93,66,0.045)'};`">
-            <span :style="`font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:${nb.meRow?'#f7d684':'#8a8170'}; width:42px; flex:0 0 auto;`">{{ nb.posLabel }}</span>
-            <span :style="`flex:1 1 auto; min-width:0; font-family:Archivo; font-weight:${nb.meRow?800:600}; font-size:15px; color:${nb.meRow?'#f7d684':'#ece3d2'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;`">{{ nb.name }}</span>
-            <span :style="`font-family:'Space Mono',monospace; font-weight:700; font-size:13px; color:${nb.meRow?'#f7d684':'#bfb6a3'}; flex:0 0 auto;`">{{ nb.pts }} pts</span>
-            <span :style="`font-family:'Space Mono',monospace; font-size:12px; font-weight:700; color:${nb.deltaColor}; width:50px; text-align:right; flex:0 0 auto;`">{{ nb.deltaLabel }}</span>
+            <span :style="`font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:${nb.meRow?'#f7d684':'#8a8170'}; width:38px; flex:0 0 auto;`">{{ nb.posLabel }}</span>
+            <span :style="`flex:1 1 auto; min-width:0; font-family:Archivo; font-weight:${nb.meRow?700:500}; font-size:14px; color:${nb.meRow?'#f7d684':'#bfb6a3'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;`">{{ nb.name }}</span>
+            <span :style="`font-family:'Space Mono',monospace; font-weight:700; font-size:16px; letter-spacing:-0.5px; color:${nb.meRow?'#f7d684':'#ece3d2'}; flex:0 0 auto; min-width:52px; text-align:right;`">{{ nb.pts }}<span style="font-size:10px; letter-spacing:1px; opacity:.6; margin-left:3px;">pts</span></span>
+            <span :style="`font-family:'Space Mono',monospace; font-size:12px; font-weight:700; color:${nb.deltaColor}; width:46px; text-align:right; flex:0 0 auto;`">{{ nb.deltaLabel }}</span>
           </div>
         </div>
 
