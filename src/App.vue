@@ -562,15 +562,10 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
         <!-- banner -->
         <div :style="`padding:20px 22px; border-radius:16px; background:${mePlayer.bannerBg}; border:1px solid ${mePlayer.bannerBorder}; color:${mePlayer.bannerColor};`">
           <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2.5px; opacity:.9;">{{ mePlayer.vtag }}</div>
-          <div style="display:flex; align-items:flex-end; gap:14px; margin-top:8px; flex-wrap:wrap;">
-            <div style="line-height:.85;">
-              <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(36px,9vw,52px); line-height:.9; letter-spacing:-1px;">{{ mePlayer.pts }}</div>
-              <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(11px,2vw,13px); letter-spacing:3px; opacity:.8; margin-top:4px;">PTS</div>
-            </div>
-            <div style="padding-bottom:4px;">
-              <div style="font-family:Archivo; font-weight:800; font-size:clamp(15px,3.5vw,22px); line-height:1.1; letter-spacing:.3px;">{{ mePlayer.name }}</div>
-              <div style="font-family:'Space Mono',monospace; font-size:11px; opacity:.6; margin-top:5px; letter-spacing:.5px;">#{{ mePlayer.pos }} de {{ mePlayer.n }} apostantes</div>
-            </div>
+          <div style="margin-top:10px;">
+            <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(40px,10vw,58px); line-height:.85; letter-spacing:-1px;">#{{ mePlayer.pos }}</div>
+            <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:20px; letter-spacing:-.5px; opacity:.85; margin-top:8px;">{{ mePlayer.pts }}<span style="font-size:12px; letter-spacing:2px; opacity:.7; margin-left:5px;">PTS</span></div>
+            <div style="font-family:'Space Mono',monospace; font-size:11px; opacity:.55; margin-top:6px; letter-spacing:.3px;">{{ mePlayer.name }} · de {{ mePlayer.n }} apostantes</div>
           </div>
         </div>
 
