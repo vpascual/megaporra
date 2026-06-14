@@ -35,6 +35,11 @@ Route components in the router config are `{ render: () => null }` stubs, becaus
 
 ### Data flow
 
+CSV source URL (hardcoded in `src/utils/csvParser.js`):
+```
+https://docs.google.com/spreadsheets/d/1mBLMjjyqSm5E7pnq2G4hJVSJuJJDl3lYrJfuC43diHo/export?format=csv&gid=0
+```
+
 ```
 Google Sheets CSV
   → src/utils/csvParser.js (fetchData)
@@ -72,6 +77,10 @@ Character photos are in **`public/assets/`** and referenced as `/assets/pako.jpe
 | `/assets/pamela.jpeg` | Pamela | `#e7b656` (gold) | `50% 26%` |
 
 Avatar CSS: `border-radius:50%; object-fit:cover; border:2px solid <color>; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35);`
+
+### Sparkline tooltip
+
+The sparkline bar group in the ranking table uses a `<Teleport to="body">` tooltip (not a CSS `::after`) to escape the `overflow:hidden` on the ranking container. State: `sparkTip = ref({ show, x, y, text })`. Handlers: `onSparkEnter(evt, text)`, `onSparkMove(evt)`, `onSparkLeave()`. The tooltip text is pre-built per row as `sparkTooltip` (e.g. `"J1: 7 pts · J2: 9 pts"`).
 
 ### Design system
 

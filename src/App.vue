@@ -24,8 +24,13 @@ const lastPlayed   = ref(1)
 const loading      = ref(true)
 const error        = ref(null)
 const railEl       = ref(null)
+const sparkTip     = ref({ show: false, x: 0, y: 0, text: '' })
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
+function onSparkEnter(evt, text) { sparkTip.value = { show: true, x: evt.clientX, y: evt.clientY, text } }
+function onSparkMove(evt) { sparkTip.value.x = evt.clientX; sparkTip.value.y = evt.clientY }
+function onSparkLeave() { sparkTip.value.show = false }
+
 function norm(s) {
   return (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
@@ -177,13 +182,15 @@ const filteredRows = computed(() => {
 
     // sparkline bars (played jornadas only)
     const spark = e.scores.slice(0, lastPlayed.value).map((sc, si) => ({
-      title: `Jornada ${si + 1} · ${sc == null ? 'sin jugar' : sc + ' pts'}`,
       h: Math.max(0, Math.round(((sc ?? 0) / 24) * 100)),
     }))
+    const sparkTooltip = e.scores.slice(0, lastPlayed.value)
+      .map((sc, si) => `J${si + 1}: ${sc == null ? '—' : sc + ' pts'}`)
+      .join(' · ')
 
     return {
       name: e.name, pos: e.pos, pts: e.pts,
-      top, mis, arrow, arrowColor, tag, tagColor, spark,
+      top, mis, arrow, arrowColor, tag, tagColor, spark, sparkTooltip,
       isMiseryStart: fq.length < 1 && idx === miseryStart.value,
     }
   })
@@ -343,7 +350,7 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
           </div>
         </div>
         <div>
-          <div style="font-family:'Space Mono',monospace; font-size:9.5px; letter-spacing:1.6px; color:#1a1205; background:linear-gradient(160deg,#f7d684,#d2a23f); padding:6px 11px; border-radius:6px; font-weight:700;">LA MÁS AMBICIOSA EDICIÓN</div>
+          <div style="font-family:'Space Mono',monospace; font-size:9.5px; letter-spacing:1.6px; color:#b08a3e; font-weight:700;">LA MÁS AMBICIOSA EDICIÓN</div>
         </div>
       </div>
 
@@ -477,8 +484,12 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
             </div>
 
             <!-- sparkline -->
-            <div v-if="showSpark" style="display:flex; align-items:flex-end; gap:3px; height:28px; flex:0 0 auto;">
-              <div v-for="(b, bi) in row.spark" :key="bi" :title="b.title"
+            <div v-if="showSpark"
+                 @mouseenter="e => onSparkEnter(e, row.sparkTooltip)"
+                 @mousemove="onSparkMove"
+                 @mouseleave="onSparkLeave"
+                 style="display:flex; align-items:flex-end; gap:3px; height:28px; flex:0 0 auto; cursor:default;">
+              <div v-for="(b, bi) in row.spark" :key="bi"
                    style="width:5px; height:26px; background:rgba(255,255,255,0.06); border-radius:2px; display:flex; align-items:flex-end; overflow:hidden;">
                 <div :style="`width:100%; height:${b.h}%; background:linear-gradient(180deg,#f7d684,#c79433); border-radius:2px;`"></div>
               </div>
@@ -634,6 +645,14 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
     <div style="font-family:'Spectral',serif; font-style:italic; font-size:13px; color:#8a8170; line-height:1.6;">Crónica oficial firmada por el caudillo <span style="color:#e7b656; font-style:normal;">Pako Porras</span>. Datos custodiados por el Becario en el HAL200. Reclamaciones a Pamela. Quejas, a Madre — bajo vuestra entera responsabilidad.</div>
     <div style="font-family:'Space Mono',monospace; font-size:9.5px; letter-spacing:1.5px; color:#5a5444; margin-top:9px;">MEGAPORRA CORPORATION © MUNDIAL 2026</div>
   </footer>
+
+  <!-- sparkline tooltip (teleported to body to escape overflow:hidden containers) -->
+  <Teleport to="body">
+    <div v-if="sparkTip.show"
+         :style="`position:fixed; left:${sparkTip.x}px; top:${sparkTip.y - 14}px; transform:translate(-50%,-100%); background:#161b27; border:1px solid rgba(231,182,86,0.35); color:#f7d684; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.3px; padding:7px 11px; border-radius:8px; white-space:nowrap; pointer-events:none; z-index:9999; box-shadow:0 4px 20px rgba(0,0,0,0.6);`">
+      {{ sparkTip.text }}
+    </div>
+  </Teleport>
 
 </div>
 </template>
