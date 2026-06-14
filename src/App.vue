@@ -1,10 +1,15 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { fetchData } from './utils/csvParser.js'
 const PAKO    = '/assets/pako.jpeg'
 const BECARIO = '/assets/becario.jpeg'
 const MADRE   = '/assets/madre.jpeg'
 const PAMELA  = '/assets/pamela.jpeg'
+
+// ─── router ──────────────────────────────────────────────────────────────────
+const router = useRouter()
+const route  = useRoute()
 
 // ─── state ───────────────────────────────────────────────────────────────────
 const view         = ref('clasificacion')
@@ -255,6 +260,23 @@ function scrollRail() {
 }
 watch(jornadaNum, scrollRail)
 
+// ─── route sync ──────────────────────────────────────────────────────────────
+watch(
+  () => route.params.id,
+  (id) => {
+    if (id) {
+      const name = decodeURIComponent(id)
+      view.value = 'buscate'
+      selectedName.value = name
+      query.value = name
+    } else if (route.path === '/') {
+      view.value = 'clasificacion'
+      selectedName.value = null
+    }
+  },
+  { immediate: true },
+)
+
 // ─── lifecycle ────────────────────────────────────────────────────────────────
 async function load() {
   try {
@@ -283,19 +305,18 @@ onMounted(() => {
 
 // ─── actions ──────────────────────────────────────────────────────────────────
 function selectJornada(j) { if (j.played) jornadaNum.value = j.n }
-function goClas() { view.value = 'clasificacion' }
-function goBusca() { view.value = 'buscate' }
-function openBuscate(name) { view.value = 'buscate'; selectedName.value = name; query.value = name }
+function goClas() { router.push('/') }
+function goBusca() { view.value = 'buscate'; selectedName.value = null; query.value = '' }
+function openBuscate(name) { router.push('/participant/' + encodeURIComponent(name)) }
 function onQuery(e) { query.value = e.target.value; selectedName.value = null }
 function onFilter(e) { filter.value = e.target.value }
 function onSearchKey(e) {
   if (e.key === 'Enter' && suggestions.value.length) {
-    selectedName.value = suggestions.value[0].name
-    query.value = suggestions.value[0].name
+    router.push('/participant/' + encodeURIComponent(suggestions.value[0].name))
   }
 }
-function selectSugg(s) { selectedName.value = s.name; query.value = s.name }
-function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; query.value = nb.name } }
+function selectSugg(s) { router.push('/participant/' + encodeURIComponent(s.name)) }
+function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encodeURIComponent(nb.name)) }
 </script>
 
 <template>
@@ -487,6 +508,16 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
 
     <!-- ═══ BÚSCATE ═══ -->
     <div v-else-if="view === 'buscate'">
+
+      <!-- back breadcrumb -->
+      <div style="margin-bottom:14px;">
+        <button @click="goClas()"
+                style="display:inline-flex; align-items:center; gap:7px; background:transparent; border:1px solid rgba(231,182,86,0.22); color:#b08a3e; border-radius:8px; padding:7px 14px; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:1.2px; cursor:pointer; transition:border-color .15s,color .15s;"
+                onmouseover="this.style.borderColor='#e7b656';this.style.color='#f7d684'"
+                onmouseout="this.style.borderColor='rgba(231,182,86,0.22)';this.style.color='#b08a3e'">
+          ← CLASIFICACIÓN GENERAL
+        </button>
+      </div>
 
       <!-- search box -->
       <div style="position:relative; border:1px solid rgba(231,182,86,0.2); border-radius:16px; padding:26px 22px; background:linear-gradient(160deg,#1a2030,rgba(19,24,34,0.5)); overflow:hidden;">
