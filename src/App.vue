@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { fetchData } from './utils/csvParser.js'
-import pakoImg    from './assets/pako.jpeg'
-import becarioImg from './assets/becario.jpeg'
-import madreImg   from './assets/madre.jpeg'
-import pamelaImg  from './assets/pamela.jpeg'
+const PAKO    = '/assets/pako.jpeg'
+const BECARIO = '/assets/becario.jpeg'
+const MADRE   = '/assets/madre.jpeg'
+const PAMELA  = '/assets/pamela.jpeg'
 
 // ─── state ───────────────────────────────────────────────────────────────────
 const view         = ref('clasificacion')
@@ -314,8 +314,8 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
       <!-- brand row -->
       <div style="display:flex; align-items:center; gap:14px; justify-content:space-between; flex-wrap:wrap;">
         <div style="display:flex; align-items:center; gap:13px; min-width:0;">
-          <img :src="pakoImg" alt="Pako Porras"
-               style="width:48px; height:48px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #e7b656; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,0.4); flex:0 0 auto;">
+          <img :src="PAKO" alt="Pako Porras"
+               style="width:48px; height:48px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #e7b656; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); flex:0 0 auto;">
           <div style="min-width:0;">
             <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:25px; letter-spacing:2px; line-height:1; color:#f7d684; text-shadow:0 0 14px rgba(231,182,86,0.45);">MEGAPORRA</div>
             <div style="font-family:'Space Mono',monospace; font-weight:400; font-size:10.5px; letter-spacing:5.5px; color:#b08a3e; margin-top:3px;">C O R P O R A T I O N</div>
@@ -347,7 +347,7 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
 
     <!-- loading -->
     <div v-if="loading" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:60px 20px;">
-      <img :src="becarioImg" style="width:54px; height:54px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #46b884; animation:mpSpot 2s ease-in-out infinite;">
+      <img :src="BECARIO" style="width:54px; height:54px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #46b884; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); animation:mpSpot 2s ease-in-out infinite;">
       <div style="font-family:'Spectral',serif; font-style:italic; font-size:16px; color:#bfb6a3;">El Becario está interrogando al HAL200. Aguardad, fauna variada…</div>
     </div>
 
@@ -385,7 +385,7 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
           <div style="flex:1; height:1px; background:linear-gradient(90deg,rgba(231,182,86,0.4),transparent);"></div>
         </div>
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-          <img :src="pakoImg" style="width:30px; height:30px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:1.5px solid #e7b656;">
+          <img :src="PAKO" style="width:30px; height:30px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:1.5px solid #e7b656; box-shadow:0 0 0 2px #0e1016, 0 0 10px rgba(231,182,86,.35);">
           <div style="font-family:'Spectral',serif; font-style:italic; font-size:13.5px; color:#bfb6a3;">Bajo la atenta mirada del caudillo Pako Porras y su séquito de aduladores.</div>
         </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
@@ -430,7 +430,7 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
           <!-- zona de miseria banner -->
           <div v-if="row.isMiseryStart"
                style="display:flex; align-items:center; gap:11px; padding:11px 16px; background:linear-gradient(90deg,rgba(221,93,66,0.18),rgba(221,93,66,0.02)); border-top:1px solid rgba(221,93,66,0.35); border-bottom:1px solid rgba(221,93,66,0.25);">
-            <img :src="madreImg" style="width:30px; height:30px; border-radius:50%; object-fit:cover; object-position:50% 38%; border:1.5px solid #dd5d42; flex:0 0 auto;">
+            <img :src="MADRE" style="width:30px; height:30px; border-radius:50%; object-fit:cover; object-position:50% 38%; border:1.5px solid #dd5d42; box-shadow:0 0 0 2px #0e1016, 0 0 10px rgba(221,93,66,.35); flex:0 0 auto;">
             <div>
               <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:11px; letter-spacing:1.5px; color:#dd5d42;">ZONA DE MISERIA · LOS ÚLTIMOS 10</div>
               <div style="font-family:'Spectral',serif; font-style:italic; font-size:12px; color:#b8a99c;">Vigilada por Madre desde el terrado, trampa para ratas cebada.</div>
@@ -476,7 +476,7 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
 
       <!-- becario stamp -->
       <div style="display:flex; align-items:center; gap:13px; margin-top:20px; padding:14px 16px; border:1px dashed rgba(70,184,132,0.4); border-radius:12px; background:rgba(20,58,43,0.22);">
-        <img :src="becarioImg" style="width:42px; height:42px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #46b884; flex:0 0 auto;">
+        <img :src="BECARIO" style="width:42px; height:42px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #46b884; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); flex:0 0 auto;">
         <div style="font-family:'Spectral',serif; font-style:italic; font-size:13.5px; color:#bfb6a3; line-height:1.5;">
           El Becario actualizó el marcador el <span style="color:#7fd3a8; font-style:normal; font-family:'Space Mono',monospace; font-size:12px;">{{ todayStr }}</span> tras varias horas frente al HAL200.
         </div>
@@ -492,7 +492,7 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
       <div style="position:relative; border:1px solid rgba(231,182,86,0.2); border-radius:16px; padding:26px 22px; background:linear-gradient(160deg,#1a2030,rgba(19,24,34,0.5)); overflow:hidden;">
         <div style="position:absolute; top:-40px; right:-30px; width:180px; height:180px; background:radial-gradient(circle,rgba(231,182,86,0.16),transparent 70%); pointer-events:none;"></div>
         <div style="display:flex; align-items:center; gap:13px; margin-bottom:6px;">
-          <img :src="pamelaImg" style="width:46px; height:46px; border-radius:50%; object-fit:cover; object-position:50% 26%; border:2px solid #e7b656; flex:0 0 auto;">
+          <img :src="PAMELA" style="width:46px; height:46px; border-radius:50%; object-fit:cover; object-position:50% 26%; border:2px solid #e7b656; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); flex:0 0 auto;">
           <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2px; color:#b08a3e;">DEPARTAMENTO DE RECLAMACIONES · PAMELA</div>
         </div>
         <h1 style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(16px,4vw,23px); line-height:1.15; letter-spacing:0.5px; color:#f7d684; margin:8px 0 7px; text-shadow:0 0 16px rgba(231,182,86,0.3);">Localiza tu miserable posición en el Imperio</h1>
@@ -543,7 +543,7 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
         <!-- pako verdict -->
         <div style="margin-top:13px; padding:18px 20px; border:1px solid rgba(231,182,86,0.18); border-radius:14px; background:#161b27;">
           <div style="display:flex; align-items:flex-start; gap:13px;">
-            <img :src="pakoImg" style="width:40px; height:40px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #e7b656; flex:0 0 auto;">
+            <img :src="PAKO" style="width:40px; height:40px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #e7b656; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); flex:0 0 auto;">
             <div>
               <div style="font-family:'Spectral',serif; font-weight:600; font-size:18px; color:#f7d684; line-height:1.25;">{{ mePlayer.vtitle }}</div>
               <div style="font-family:'Spectral',serif; font-style:italic; font-size:15px; color:#cabfa9; line-height:1.55; margin-top:7px;">{{ mePlayer.vbody }}</div>
@@ -584,14 +584,14 @@ function selectNeighbor(nb) { if (!nb.meRow) { selectedName.value = nb.name; que
 
         <!-- pamela note -->
         <div style="display:flex; align-items:center; gap:11px; margin-top:14px; padding:13px 15px; border-radius:12px; background:rgba(231,182,86,0.06); border:1px dashed rgba(231,182,86,0.3);">
-          <img :src="pamelaImg" style="width:34px; height:34px; border-radius:50%; object-fit:cover; object-position:50% 26%; border:1.5px solid #e7b656; flex:0 0 auto;">
+          <img :src="PAMELA" style="width:34px; height:34px; border-radius:50%; object-fit:cover; object-position:50% 26%; border:1.5px solid #e7b656; box-shadow:0 0 0 2px #0e1016, 0 0 10px rgba(231,182,86,.35); flex:0 0 auto;">
           <div style="font-family:'Spectral',serif; font-style:italic; font-size:13px; color:#bfb6a3;">Reclamación despachada por Pamela. Si no estás conforme, ya sabes dónde no quejarte.</div>
         </div>
       </div>
 
       <!-- idle state -->
       <div v-if="!selectedName" style="margin-top:22px; text-align:center; padding:30px 20px;">
-        <img :src="becarioImg" style="width:64px; height:64px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid rgba(70,184,132,0.5); opacity:.85;">
+        <img :src="BECARIO" style="width:64px; height:64px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #46b884; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); opacity:.85;">
         <div style="font-family:'Spectral',serif; font-style:italic; font-size:15px; color:#8a8170; margin-top:14px; max-width:420px; margin-left:auto; margin-right:auto;">Distinguido megaporrero: aún no has tecleado tu nombre. El HAL200 aguarda. El Becario, también.</div>
       </div>
 
