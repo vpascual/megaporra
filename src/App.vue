@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { fetchData } from './utils/csvParser.js'
-import pakoImg    from './assets/Pako Porras.jpeg'
+import pakoImg    from './assets/pako.jpeg'
 import becarioImg from './assets/becario.jpeg'
 import madreImg   from './assets/madre.jpeg'
 import pamelaImg  from './assets/pamela.jpeg'
