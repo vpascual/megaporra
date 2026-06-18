@@ -315,7 +315,7 @@ onMounted(() => {
 
 // ─── actions ──────────────────────────────────────────────────────────────────
 function selectJornada(j) { if (j.played) jornadaNum.value = j.n }
-function goClas() { router.push('/') }
+function goClas() { view.value = 'clasificacion'; selectedName.value = null; router.push('/') }
 function goBusca() { view.value = 'buscate'; selectedName.value = null; query.value = '' }
 function openBuscate(name) { router.push('/participant/' + encodeURIComponent(name)) }
 function onQuery(e) { query.value = e.target.value; selectedName.value = null }
