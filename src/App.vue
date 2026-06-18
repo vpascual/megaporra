@@ -298,15 +298,15 @@ async function load() {
   try {
     loading.value = true; error.value = null
     const data = await fetchData()
-    players.value  = data.players
-    jornadas.value = data.jornadas
+    players.value    = data.players
+    jornadas.value   = data.jornadas
     lastPlayed.value = data.lastPlayed
     jornadaNum.value = data.lastPlayed
-    await nextTick()
+    loading.value = false          // rail renders now (v-else-if becomes true)
+    await nextTick()               // wait for rail DOM to appear
     scrollRail(true)
   } catch (e) {
     error.value = e.message
-  } finally {
     loading.value = false
   }
 }
