@@ -5,9 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev        # dev server at localhost:5173
-npm run build      # production build → dist/
-npm run preview    # serve dist/ locally
+npm run dev              # dev server at localhost:5173 (localhost only)
+npm run dev -- --host    # expose on LAN — use the Network URL to test on mobile
+npm run build            # production build → dist/
+npm run preview          # serve dist/ locally
 ```
 
 No linter or test suite is configured.
@@ -82,6 +83,14 @@ Avatar CSS: `border-radius:50%; object-fit:cover; border:2px solid <color>; box-
 
 The sparkline bar group in the ranking table uses a `<Teleport to="body">` tooltip (not a CSS `::after`) to escape the `overflow:hidden` on the ranking container. State: `sparkTip = ref({ show, x, y, text })`. Handlers: `onSparkEnter(evt, text)`, `onSparkMove(evt)`, `onSparkLeave()`. The tooltip text is pre-built per row as `sparkTooltip` (e.g. `"J1: 7 pts · J2: 9 pts"`).
 
+### Jornada rail scroll
+
+`scrollRail()` fires after data loads and on every `jornadaNum` change. It calls `chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })` on the active chip so it stays centered in the horizontal scroll container.
+
+### Búscate profile — neighbor sparklines
+
+The "QUIÉN TE RODEA EN EL ESCALAFÓN" table shows 7 rows (3 above, you, 3 below). Each row includes a compact per-round sparkline (4×22px bars, same gold gradient as the leaderboard) built from `x.scores.slice(0, lastPlayed)` inside the `mePlayer` computed. The bars sit between the player name and their points total.
+
 ### Design system
 
 The design spec lives in `src/assets/DESIGN_SPEC.md` and the reference prototype in `src/assets/La Megaporra.dc.html`. These are the sources of truth for any visual change.
@@ -98,3 +107,5 @@ All copy is in Castilian Spanish with a grandiose imperial tone ("crónica colon
 ### Deployment
 
 `vercel.json` has a catch-all rewrite to `index.html` for SPA support. The app is deployed from `main` to Vercel. Connect the GitHub repo via the Vercel dashboard to trigger auto-deploys on push to `main`.
+
+Preview deployments (from `staging` pushes) are protected by Vercel login by default. To test on a phone without logging in, either disable Deployment Protection in the Vercel dashboard (Project → Settings → Deployment Protection) or use `npm run dev -- --host` locally.

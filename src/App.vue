@@ -534,7 +534,7 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
       </div>
 
       <!-- search box -->
-      <div style="position:relative; border:1px solid rgba(231,182,86,0.2); border-radius:16px; padding:26px 22px; background:linear-gradient(160deg,#1a2030,rgba(19,24,34,0.5)); overflow:hidden;">
+      <div style="position:relative; border:1px solid rgba(231,182,86,0.2); border-radius:16px; padding:26px 22px; background:linear-gradient(160deg,#1a2030,rgba(19,24,34,0.5));">
         <div style="position:absolute; top:-40px; right:-30px; width:180px; height:180px; background:radial-gradient(circle,rgba(231,182,86,0.16),transparent 70%); pointer-events:none;"></div>
         <div style="display:flex; align-items:center; gap:13px; margin-bottom:6px;">
           <img :src="PAMELA" style="width:46px; height:46px; border-radius:50%; object-fit:cover; object-position:50% 26%; border:2px solid #e7b656; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); flex:0 0 auto;">
