@@ -261,8 +261,7 @@ function scrollRail() {
     if (!railEl.value) return
     const chip = railEl.value.children[jornadaNum.value - 1]
     if (!chip) return
-    const target = chip.offsetLeft + chip.offsetWidth - railEl.value.clientWidth + 14
-    railEl.value.scrollTo({ left: Math.max(0, target), behavior: 'smooth' })
+    chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   })
 }
 watch(jornadaNum, scrollRail)
