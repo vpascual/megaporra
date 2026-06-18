@@ -217,10 +217,14 @@ const mePlayer = computed(() => {
   const neighbors = []
   for (let k = lo; k <= hi; k++) {
     const x = cur.value[k], meRow = k === i, d = x.pts - e.pts
+    const spark = x.scores.slice(0, lastPlayed.value).map(sc => ({
+      h: Math.max(0, Math.round(((sc ?? 0) / 24) * 100)),
+    }))
     neighbors.push({
       posLabel: '#' + x.pos, name: x.name, pts: x.pts, meRow, ab: k < i,
       deltaLabel: meRow ? '◆ TÚ' : (d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '='),
       deltaColor: meRow ? '#f7d684' : (k < i ? '#46b884' : '#dd5d42'),
+      spark,
     })
   }
 
@@ -616,6 +620,12 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
                :style="`display:flex; align-items:center; gap:12px; padding:12px 15px; cursor:${nb.meRow?'default':'pointer'}; border-bottom:1px solid rgba(255,255,255,0.05); background:${nb.meRow?'linear-gradient(90deg,rgba(231,182,86,0.2),rgba(231,182,86,0.03))':nb.ab?'rgba(70,184,132,0.05)':'rgba(221,93,66,0.045)'};`">
             <span :style="`font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:${nb.meRow?'#f7d684':'#8a8170'}; width:38px; flex:0 0 auto;`">{{ nb.posLabel }}</span>
             <span :style="`flex:1 1 auto; min-width:0; font-family:Archivo; font-weight:${nb.meRow?700:500}; font-size:14px; color:${nb.meRow?'#f7d684':'#bfb6a3'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;`">{{ nb.name }}</span>
+            <div style="display:flex; gap:1.5px; align-items:flex-end; flex:0 0 auto;">
+              <div v-for="(b, bi) in nb.spark" :key="bi"
+                   style="width:4px; height:22px; background:rgba(255,255,255,0.06); border-radius:1.5px; display:flex; align-items:flex-end; overflow:hidden;">
+                <div :style="`width:100%; height:${b.h}%; background:linear-gradient(180deg,#f7d684,#c79433); border-radius:1.5px;`"></div>
+              </div>
+            </div>
             <span :style="`font-family:'Space Mono',monospace; font-weight:700; font-size:16px; letter-spacing:-0.5px; color:${nb.meRow?'#f7d684':'#ece3d2'}; flex:0 0 auto; min-width:52px; text-align:right;`">{{ nb.pts }}<span style="font-size:10px; letter-spacing:1px; opacity:.6; margin-left:3px;">pts</span></span>
             <span :style="`font-family:'Space Mono',monospace; font-size:12px; font-weight:700; color:${nb.deltaColor}; width:46px; text-align:right; flex:0 0 auto;`">{{ nb.deltaLabel }}</span>
           </div>
