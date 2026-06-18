@@ -85,7 +85,9 @@ The sparkline bar group in the ranking table uses a `<Teleport to="body">` toolt
 
 ### Jornada rail scroll
 
-`scrollRail()` fires after data loads and on every `jornadaNum` change. It calls `chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })` on the active chip so it stays centered in the horizontal scroll container.
+`scrollRail(instant)` fires after data loads and on every `jornadaNum` change. It right-aligns the active chip (`.rail-active`) inside the `railEl` container using `scrollLeft` (instant on mount) or `scrollTo` with smooth (user interaction).
+
+**Critical**: `railEl` is inside `v-else-if="view === 'clasificacion'"` which only renders when `loading === false`. Always set `loading.value = false` **before** calling `scrollRail` — otherwise `railEl.value` is null and the scroll is a silent no-op.
 
 ### Búscate profile — neighbor sparklines
 
