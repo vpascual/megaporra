@@ -265,7 +265,13 @@ function scrollRail(instant = false) {
     if (!railEl.value) return
     const chip = railEl.value.querySelector('.rail-active')
     if (!chip) return
-    chip.scrollIntoView({ behavior: instant ? 'instant' : 'smooth', inline: 'center', block: 'nearest' })
+    // Right-align the active chip so the user can scroll left to see earlier jornadas
+    const target = Math.max(0, chip.offsetLeft + chip.offsetWidth - railEl.value.clientWidth + 16)
+    if (instant) {
+      railEl.value.scrollLeft = target  // direct assignment — reliable on all mobile browsers
+    } else {
+      railEl.value.scrollTo({ left: target, behavior: 'smooth' })
+    }
   })
 }
 watch(jornadaNum, () => scrollRail(false))
