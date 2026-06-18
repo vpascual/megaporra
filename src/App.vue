@@ -260,15 +260,15 @@ const today = new Date()
 const todayStr = `${String(today.getDate()).padStart(2,'0')}·${String(today.getMonth()+1).padStart(2,'0')}·${today.getFullYear()}`
 
 // ─── rail scroll ─────────────────────────────────────────────────────────────
-function scrollRail() {
+function scrollRail(instant = false) {
   nextTick(() => {
     if (!railEl.value) return
-    const chip = railEl.value.children[jornadaNum.value - 1]
+    const chip = railEl.value.querySelector('.rail-active')
     if (!chip) return
-    chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    chip.scrollIntoView({ behavior: instant ? 'instant' : 'smooth', inline: 'center', block: 'nearest' })
   })
 }
-watch(jornadaNum, scrollRail)
+watch(jornadaNum, () => scrollRail(false))
 
 // ─── route sync ──────────────────────────────────────────────────────────────
 watch(
@@ -297,7 +297,7 @@ async function load() {
     lastPlayed.value = data.lastPlayed
     jornadaNum.value = data.lastPlayed
     await nextTick()
-    scrollRail()
+    scrollRail(true)
   } catch (e) {
     error.value = e.message
   } finally {
@@ -401,6 +401,7 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
         <div ref="railEl" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin;">
           <div v-for="j in jornadasRail" :key="j.n"
                @click="selectJornada(j)"
+               :class="{ 'rail-active': j.active }"
                :style="`flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; min-width:54px; height:56px; padding:0 12px; border-radius:11px; cursor:${j.played?'pointer':'not-allowed'}; font-family:'Space Mono',monospace; background:${j.active?'linear-gradient(160deg,#f7d684,#d2a23f)':j.played?'rgba(255,255,255,0.05)':'transparent'}; border:1px solid ${j.active?'transparent':j.played?'rgba(231,182,86,0.22)':'rgba(255,255,255,0.06)'}; color:${j.active?'#1a1205':j.played?'#ece3d2':'#8a8170'}; box-shadow:${j.active?'0 3px 14px rgba(231,182,86,0.32)':'none'}; opacity:${j.played?1:0.5};`">
             <span style="font-size:8.5px; letter-spacing:1.5px; opacity:.7;">JOR</span>
             <span style="font-size:17px; font-weight:700; line-height:1;">{{ j.n }}</span>
