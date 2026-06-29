@@ -36,21 +36,30 @@ Route components in the router config are `{ render: () => null }` stubs, becaus
 
 ### Data flow
 
-CSV source URL (hardcoded in `src/utils/csvParser.js`):
+Both CSVs are fetched in parallel via `Promise.all` on every page load.
+
+**Main leaderboard CSV** (hardcoded in `src/utils/csvParser.js`):
 ```
-https://docs.google.com/spreadsheets/d/1mBLMjjyqSm5E7pnq2G4hJVSJuJJDl3lYrJfuC43diHo/export?format=csv&gid=0
+https://docs.google.com/spreadsheets/d/e/2PACX-1vTXkYTxBqRAob7uos5aRrDFXifXnkWthk7khZUQEZ1VD0VzVOf2vMKYEmgoJQXoGuDKlyJZ1lYZtKRj/pub?output=csv
 ```
 
+**Max points per round CSV** (`MAX_POINTS_URL` in `src/utils/csvParser.js`):
 ```
-Google Sheets CSV
+https://docs.google.com/spreadsheets/d/e/2PACX-1vRGi8CanQr8NDf0iTRzQATs47If3qKHXMXDPNk_mmFl0US-IjOjZaSX7XIkrUtV-tMk45-eCHPqAsv7/pub?gid=0&single=true&output=csv
+```
+Structure: Row 0 is headers (`JORNADA 1`, `JORNADA 2`, …). Row 1 is `"PUNTS MAXIMS"` in col A, then the max achievable points per round (e.g. `9, 18, 18, 45, …`). Parsed into `roundMaxPoints[]` (null for missing/future rounds). Fetches fail silently — sparkbars degrade to 0-height if unavailable.
+
+```
+Google Sheets CSVs (parallel)
   → src/utils/csvParser.js (fetchData)
-      returns { players, jornadas, lastPlayed }
+      returns { players, jornadas, lastPlayed, roundMaxPoints }
   → App.vue (load())
       players: [{ name, scores: (number|null)[], total }]
       jornadas: [{ n, phase, date, dateTag, cols[] }]
+      roundMaxPoints: (number|null)[]
 ```
 
-**CSV structure (3 header rows):**
+**Main CSV structure (3 header rows):**
 - Row 0: `JORNADA N` labels — some jornadas span multiple sub-columns (fill-forward logic groups them)
 - Row 1: phase names (`FASE GRUPOS`, `OCTAVOS`, etc.) — `EXTRES` marks the stop boundary
 - Row 2: dates + `TOTAL` marker in the last data column
@@ -81,7 +90,11 @@ Avatar CSS: `border-radius:50%; object-fit:cover; border:2px solid <color>; box-
 
 ### Sparkline tooltip
 
-The sparkline bar group in the ranking table uses a `<Teleport to="body">` tooltip (not a CSS `::after`) to escape the `overflow:hidden` on the ranking container. State: `sparkTip = ref({ show, x, y, text })`. Handlers: `onSparkEnter(evt, text)`, `onSparkMove(evt)`, `onSparkLeave()`. The tooltip text is pre-built per row as `sparkTooltip` (e.g. `"J1: 7 pts · J2: 9 pts"`).
+The sparkline uses a `<Teleport to="body">` tooltip (not a CSS `::after`) to escape the `overflow:hidden` on the ranking container. State: `sparkTip = ref({ show, x, y, text })`. Handlers: `onSparkEnter(evt, text)`, `onSparkMove(evt)`, `onSparkLeave()`.
+
+Tooltips are **per-bar**: each bar object in the `spark` array carries a `tip` string (`"J4: 21 pts · màx: 45 pts"`). Handlers are attached to individual bar divs, not the container. The tooltip div uses `white-space:pre-wrap; max-width:260px` to wrap long text (used by the ⓘ info icon).
+
+A small **ⓘ icon** (desktop only, `v-if="showSpark"`) sits immediately left of the sparkbar group in both the leaderboard rows and the búscate neighbors section header. Hovering it shows `SPARK_INFO_TIP` — a fixed Pako-voice explanation of bar normalization.
 
 ### Jornada rail scroll
 
@@ -92,6 +105,8 @@ The sparkline bar group in the ranking table uses a `<Teleport to="body">` toolt
 ### Búscate profile — neighbor sparklines
 
 The "QUIÉN TE RODEA EN EL ESCALAFÓN" table shows 7 rows (3 above, you, 3 below). Each row includes a compact per-round sparkline (4×22px bars, same gold gradient as the leaderboard) built from `x.scores.slice(0, lastPlayed)` inside the `mePlayer` computed. The bars sit between the player name and their points total.
+
+Bar heights are normalized by `roundMaxPoints`: `Math.min((pts / max) * 100, 100)%`. A full bar means the participant scored the maximum possible that round. Same normalization applies to the leaderboard sparklines (5×26px bars).
 
 ### Design system
 

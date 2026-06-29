@@ -24,7 +24,9 @@ const lastPlayed   = ref(1)
 const loading      = ref(true)
 const error        = ref(null)
 const railEl       = ref(null)
+const roundMaxPoints = ref([])
 const sparkTip     = ref({ show: false, x: 0, y: 0, text: '' })
+const SPARK_INFO_TIP = 'Cada barra representa el rendimiento imperial de la jornada: no los puntos brutos, sino cuánto has exprimido del máximo posible. Una barra llena significa que lo diste TODO. Una barra vacía... el becario ya tiene instrucciones.'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 function onSparkEnter(evt, text) { sparkTip.value = { show: true, x: evt.clientX, y: evt.clientY, text } }
@@ -181,16 +183,18 @@ const filteredRows = computed(() => {
     }
 
     // sparkline bars (played jornadas only)
-    const spark = e.scores.slice(0, lastPlayed.value).map((sc, si) => ({
-      h: Math.max(0, Math.round(((sc ?? 0) / 24) * 100)),
-    }))
-    const sparkTooltip = e.scores.slice(0, lastPlayed.value)
-      .map((sc, si) => `J${si + 1}: ${sc == null ? '—' : sc + ' pts'}`)
-      .join(' · ')
+    const spark = e.scores.slice(0, lastPlayed.value).map((sc, si) => {
+      const max = roundMaxPoints.value[si]
+      const h = max ? Math.min(Math.round(((sc ?? 0) / max) * 100), 100) : 0
+      const tip = max
+        ? `J${si + 1}: ${sc == null ? '—' : sc + ' pts'} · màx: ${max} pts`
+        : `J${si + 1}: ${sc == null ? '—' : sc + ' pts'}`
+      return { h, tip }
+    })
 
     return {
       name: e.name, pos: e.pos, pts: e.pts,
-      top, mis, arrow, arrowColor, tag, tagColor, spark, sparkTooltip,
+      top, mis, arrow, arrowColor, tag, tagColor, spark,
       isMiseryStart: fq.length < 1 && idx === miseryStart.value,
     }
   })
@@ -217,9 +221,14 @@ const mePlayer = computed(() => {
   const neighbors = []
   for (let k = lo; k <= hi; k++) {
     const x = cur.value[k], meRow = k === i, d = x.pts - e.pts
-    const spark = x.scores.slice(0, lastPlayed.value).map(sc => ({
-      h: Math.max(0, Math.round(((sc ?? 0) / 24) * 100)),
-    }))
+    const spark = x.scores.slice(0, lastPlayed.value).map((sc, si) => {
+      const max = roundMaxPoints.value[si]
+      const h = max ? Math.min(Math.round(((sc ?? 0) / max) * 100), 100) : 0
+      const tip = max
+        ? `J${si + 1}: ${sc == null ? '—' : sc + ' pts'} · màx: ${max} pts`
+        : `J${si + 1}: ${sc == null ? '—' : sc + ' pts'}`
+      return { h, tip }
+    })
     neighbors.push({
       posLabel: '#' + x.pos, name: x.name, pts: x.pts, meRow, ab: k < i,
       deltaLabel: meRow ? '◆ TÚ' : (d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '='),
@@ -298,10 +307,11 @@ async function load() {
   try {
     loading.value = true; error.value = null
     const data = await fetchData()
-    players.value    = data.players
-    jornadas.value   = data.jornadas
-    lastPlayed.value = data.lastPlayed
-    jornadaNum.value = data.lastPlayed
+    players.value       = data.players
+    jornadas.value      = data.jornadas
+    lastPlayed.value    = data.lastPlayed
+    jornadaNum.value    = data.lastPlayed
+    roundMaxPoints.value = data.roundMaxPoints ?? []
     loading.value = false          // rail renders now (v-else-if becomes true)
     await nextTick()               // wait for rail DOM to appear
     scrollRail(true)
@@ -494,13 +504,18 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
             </div>
 
             <!-- sparkline -->
+            <span v-if="showSpark"
+                  @mouseenter="ev => onSparkEnter(ev, SPARK_INFO_TIP)"
+                  @mousemove="onSparkMove"
+                  @mouseleave="onSparkLeave"
+                  style="flex:0 0 auto; font-size:12px; color:#8a8170; cursor:help; line-height:1; user-select:none;">ⓘ</span>
             <div v-if="showSpark"
-                 @mouseenter="e => onSparkEnter(e, row.sparkTooltip)"
-                 @mousemove="onSparkMove"
-                 @mouseleave="onSparkLeave"
-                 style="display:flex; align-items:flex-end; gap:3px; height:28px; flex:0 0 auto; cursor:default;">
+                 style="display:flex; align-items:flex-end; gap:3px; height:28px; flex:0 0 auto;">
               <div v-for="(b, bi) in row.spark" :key="bi"
-                   style="width:5px; height:26px; background:rgba(255,255,255,0.06); border-radius:2px; display:flex; align-items:flex-end; overflow:hidden;">
+                   @mouseenter="ev => onSparkEnter(ev, b.tip)"
+                   @mousemove="onSparkMove"
+                   @mouseleave="onSparkLeave"
+                   style="width:5px; height:26px; background:rgba(255,255,255,0.06); border-radius:2px; display:flex; align-items:flex-end; overflow:hidden; cursor:default;">
                 <div :style="`width:100%; height:${b.h}%; background:linear-gradient(180deg,#f7d684,#c79433); border-radius:2px;`"></div>
               </div>
             </div>
@@ -621,6 +636,11 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
           <div style="padding:11px 15px; background:#161b27; border-bottom:1px solid rgba(231,182,86,0.16); display:flex; align-items:center; gap:8px;">
             <span style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#f7d684;">QUIÉN TE RODEA EN EL ESCALAFÓN</span>
             <span style="font-family:'Spectral',serif; font-style:italic; font-size:12px; color:#8a8170;">— tres por arriba, tres por abajo</span>
+            <span v-if="showSpark"
+                  @mouseenter="ev => onSparkEnter(ev, SPARK_INFO_TIP)"
+                  @mousemove="onSparkMove"
+                  @mouseleave="onSparkLeave"
+                  style="font-size:12px; color:#8a8170; cursor:help; line-height:1; user-select:none;">ⓘ</span>
           </div>
           <div v-for="nb in mePlayer.neighbors" :key="nb.name"
                @click="selectNeighbor(nb)"
@@ -629,7 +649,10 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
             <span :style="`flex:1 1 auto; min-width:0; font-family:Archivo; font-weight:${nb.meRow?700:500}; font-size:14px; color:${nb.meRow?'#f7d684':'#bfb6a3'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;`">{{ nb.name }}</span>
             <div style="display:flex; gap:1.5px; align-items:flex-end; flex:0 0 auto;">
               <div v-for="(b, bi) in nb.spark" :key="bi"
-                   style="width:4px; height:22px; background:rgba(255,255,255,0.06); border-radius:1.5px; display:flex; align-items:flex-end; overflow:hidden;">
+                   @mouseenter="ev => onSparkEnter(ev, b.tip)"
+                   @mousemove="onSparkMove"
+                   @mouseleave="onSparkLeave"
+                   style="width:4px; height:22px; background:rgba(255,255,255,0.06); border-radius:1.5px; display:flex; align-items:flex-end; overflow:hidden; cursor:default;">
                 <div :style="`width:100%; height:${b.h}%; background:linear-gradient(180deg,#f7d684,#c79433); border-radius:1.5px;`"></div>
               </div>
             </div>
@@ -665,7 +688,7 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
   <!-- sparkline tooltip (teleported to body to escape overflow:hidden containers) -->
   <Teleport to="body">
     <div v-if="sparkTip.show"
-         :style="`position:fixed; left:${sparkTip.x}px; top:${sparkTip.y - 14}px; transform:translate(-50%,-100%); background:#161b27; border:1px solid rgba(231,182,86,0.35); color:#f7d684; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.3px; padding:7px 11px; border-radius:8px; white-space:nowrap; pointer-events:none; z-index:9999; box-shadow:0 4px 20px rgba(0,0,0,0.6);`">
+         :style="`position:fixed; left:${sparkTip.x}px; top:${sparkTip.y - 14}px; transform:translate(-50%,-100%); background:#161b27; border:1px solid rgba(231,182,86,0.35); color:#f7d684; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.3px; padding:7px 11px; border-radius:8px; white-space:pre-wrap; max-width:260px; line-height:1.5; pointer-events:none; z-index:9999; box-shadow:0 4px 20px rgba(0,0,0,0.6);`">
       {{ sparkTip.text }}
     </div>
   </Teleport>

@@ -1,5 +1,7 @@
 const CSV_URL =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXkYTxBqRAob7uos5aRrDFXifXnkWthk7khZUQEZ1VD0VzVOf2vMKYEmgoJQXoGuDKlyJZ1lYZtKRj/pub?output=csv'
+const MAX_POINTS_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGi8CanQr8NDf0iTRzQATs47If3qKHXMXDPNk_mmFl0US-IjOjZaSX7XIkrUtV-tMk45-eCHPqAsv7/pub?gid=0&single=true&output=csv'
 
 function parseCSVLine(line) {
   const result = []
@@ -29,7 +31,7 @@ function formatDateTag(dateStr) {
 }
 
 export async function fetchData() {
-  const res = await fetch(CSV_URL)
+  const [res, maxRes] = await Promise.all([fetch(CSV_URL), fetch(MAX_POINTS_URL)])
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const text = await res.text()
   const lines = text.split('\n').filter(l => l.trim())
@@ -103,5 +105,21 @@ export async function fetchData() {
   }
   const lastPlayed = lastPlayedIdx >= 0 ? jornadas[lastPlayedIdx].n : 1
 
-  return { players, jornadas, lastPlayed }
+  // Parse max points per round
+  let roundMaxPoints = []
+  try {
+    if (maxRes.ok) {
+      const maxText = await maxRes.text()
+      const maxLines = maxText.split('\n').filter(l => l.trim())
+      if (maxLines.length >= 2) {
+        const dataRow = parseCSVLine(maxLines[1]) // "PUNTS MAXIMS", 9, 18, ...
+        roundMaxPoints = dataRow.slice(1).map(v => {
+          const n = parseInt(v, 10)
+          return isNaN(n) ? null : n
+        })
+      }
+    }
+  } catch (_) {}
+
+  return { players, jornadas, lastPlayed, roundMaxPoints }
 }
