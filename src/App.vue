@@ -595,26 +595,31 @@ function selectNeighbor(nb) { if (!nb.meRow) router.push('/participant/' + encod
       <!-- dossier -->
       <div v-if="mePlayer" style="margin-top:18px; animation:mpFade .3s ease;">
 
-        <!-- banner -->
-        <div :style="`padding:20px 22px; border-radius:16px; background:${mePlayer.bannerBg}; border:1px solid ${mePlayer.bannerBorder}; color:${mePlayer.bannerColor};`">
-          <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2.5px; opacity:.9;">{{ mePlayer.vtag }}</div>
-          <div style="margin-top:10px;">
-            <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(40px,10vw,58px); line-height:.85; letter-spacing:-1px;">#{{ mePlayer.pos }}</div>
-            <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:20px; letter-spacing:-.5px; opacity:.85; margin-top:8px;">{{ mePlayer.pts }}<span style="font-size:12px; letter-spacing:2px; opacity:.7; margin-left:5px;">PTS</span></div>
-            <div style="font-family:'Space Mono',monospace; font-size:11px; opacity:.55; margin-top:6px; letter-spacing:.3px;">{{ mePlayer.name }} · de {{ mePlayer.n }} apostantes</div>
-          </div>
-        </div>
+        <!-- banner + pako verdict side by side -->
+        <div style="display:flex; gap:13px; align-items:stretch; flex-wrap:wrap;">
 
-        <!-- pako verdict -->
-        <div style="margin-top:13px; padding:18px 20px; border:1px solid rgba(231,182,86,0.18); border-radius:14px; background:#161b27;">
-          <div style="display:flex; align-items:flex-start; gap:13px;">
-            <img :src="PAKO" style="width:40px; height:40px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #e7b656; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); flex:0 0 auto;">
-            <div>
-              <div style="font-family:'Spectral',serif; font-weight:600; font-size:18px; color:#f7d684; line-height:1.25;">{{ mePlayer.vtitle }}</div>
-              <div style="font-family:'Spectral',serif; font-style:italic; font-size:15px; color:#cabfa9; line-height:1.55; margin-top:7px;">{{ mePlayer.vbody }}</div>
-              <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1px; color:#766f5f; margin-top:11px;">— Crónica firmada por el caudillo Pako Porras</div>
+          <!-- banner -->
+          <div :style="`flex:0 0 auto; min-width:180px; padding:20px 22px; border-radius:16px; background:${mePlayer.bannerBg}; border:1px solid ${mePlayer.bannerBorder}; color:${mePlayer.bannerColor};`">
+            <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2.5px; opacity:.9;">{{ mePlayer.vtag }}</div>
+            <div style="margin-top:10px;">
+              <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:clamp(40px,10vw,58px); line-height:.85; letter-spacing:-1px;">#{{ mePlayer.pos }}</div>
+              <div style="font-family:'Space Mono',monospace; font-weight:700; font-size:20px; letter-spacing:-.5px; opacity:.85; margin-top:8px;">{{ mePlayer.pts }}<span style="font-size:12px; letter-spacing:2px; opacity:.7; margin-left:5px;">PTS</span></div>
+              <div style="font-family:'Space Mono',monospace; font-size:11px; opacity:.55; margin-top:6px; letter-spacing:.3px;">{{ mePlayer.name }} · de {{ mePlayer.n }} apostantes</div>
             </div>
           </div>
+
+          <!-- pako verdict -->
+          <div style="flex:1 1 260px; padding:18px 20px; border:1px solid rgba(231,182,86,0.18); border-radius:14px; background:#161b27;">
+            <div style="display:flex; align-items:flex-start; gap:13px;">
+              <img :src="PAKO" style="width:40px; height:40px; border-radius:50%; object-fit:cover; object-position:50% 30%; border:2px solid #e7b656; box-shadow:0 0 0 3px #0e1016, 0 0 16px rgba(231,182,86,.35); flex:0 0 auto;">
+              <div>
+                <div style="font-family:'Spectral',serif; font-weight:600; font-size:18px; color:#f7d684; line-height:1.25;">{{ mePlayer.vtitle }}</div>
+                <div style="font-family:'Spectral',serif; font-style:italic; font-size:15px; color:#cabfa9; line-height:1.55; margin-top:7px;">{{ mePlayer.vbody }}</div>
+                <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:1px; color:#766f5f; margin-top:11px;">— Crónica firmada por el caudillo Pako Porras</div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- stats cards -->
